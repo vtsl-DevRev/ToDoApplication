@@ -63,9 +63,26 @@ function addTaskToList(taskText, status) {
   inProgressButton.id = "inProgressButton";
 
   const removeButton = document.createElement("button");
-  removeButton.textContent = "Remove";
   removeButton.classList.add("textButton");
   removeButton.id = "removeButton";
+
+  const removeImg = document.createElement("img");
+  removeImg.classList.add("svgIcon");
+  removeImg.src = "assets/delete_icon.svg";
+  removeImg.alt = "delete icon";
+
+  removeButton.appendChild(removeImg);
+
+  const editButton = document.createElement("button");
+  editButton.classList.add("textButton");
+  editButton.id = "editButton";
+
+  const editImg = document.createElement("img");
+  editImg.classList.add("svgIcon");
+  editImg.src = "assets/edit_icon.svg";
+  editImg.alt = "edit icon";
+
+  editButton.appendChild(editImg);
 
   // Append appropriate buttons
   if (status === "todo") {
@@ -80,6 +97,7 @@ function addTaskToList(taskText, status) {
   }
 
   taskElement.appendChild(removeButton);
+  taskElement.appendChild(editButton);
 
   // Add event listeners for buttons
   inProgressButton.addEventListener("click", () => {
@@ -111,6 +129,13 @@ function addTaskToList(taskText, status) {
     updateLocalStorage();
   });
 
+  editButton.addEventListener("click", () => {
+    const taskText = taskElement.firstChild.textContent;
+    taskInput.value = taskText;
+    taskElement.remove();
+    updateLocalStorage();
+  });
+
   // Add task to the corresponding list
   if (status === "todo") {
     todoList.appendChild(taskElement);
@@ -123,27 +148,74 @@ function addTaskToList(taskText, status) {
 
 // Add new task
 submitButton.addEventListener("click", () => {
-  const task = taskInput.value.trim();
+  handleSubmit();
+});
 
-  if (task) {
-    addTaskToList(task, "todo");
-    taskInput.value = "";
-    updateLocalStorage();
+document.addEventListener("keypress", (event) => {
+  if (event.key === "Enter") { 
+    handleSubmit();
   }
 });
 
+// handle submission
+function  handleSubmit() {
+  const task = taskInput.value.trim();
+  let response = checkForDuplicates(task);
+
+  console.log(response);
+  
+
+  if(response){ 
+    taskInput.value = "";
+  } else {
+    if (task) {
+      addTaskToList(task, "todo");
+      taskInput.value = "";
+      updateLocalStorage();
+    }
+  }
+}
+
+// check for duplicates in all lists
+function checkForDuplicates(taskElement) {
+  const tasks = document.querySelectorAll(".task");
+  
+  // Use some() to stop when a duplicate is found
+  return Array.from(tasks).some(task => {
+    return task.firstChild.textContent === taskElement;
+  });
+}
+
 // Clear lists functionality
 clearTodo.addEventListener("click", () => {
-  todoList.innerHTML = "";
+  confirmDelete({list: todoList, status: "todo"});
   updateLocalStorage();
 });
 
 clearInProgress.addEventListener("click", () => {
-  inProgressList.innerHTML = "";
+  confirmDelete({list: inProgressList, status: "inProgress"});
   updateLocalStorage();
 });
 
 clearCompleted.addEventListener("click", () => {
-  completedList.innerHTML = "";
+  confirmDelete({list: completedList, status: "completed"});
   updateLocalStorage();
 });
+
+// modal confirmation to clear lists
+function confirmDelete({list, status}) {
+  const modalDialog = document.getElementById("modalDialog");
+  modalDialog.showModal();
+
+  const listName = document.getElementById("listName");
+  const confirmDelete = document.getElementById("confirmDelete");
+  const cancelDelete = document.getElementById("cancelDelete");
+
+  listName.textContent = status;
+
+  confirmDelete.addEventListener("click", () => {
+    list.innerHTML = "";
+    updateLocalStorage();
+    modalDialog.close();
+  });
+}

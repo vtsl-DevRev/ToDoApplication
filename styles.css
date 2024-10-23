@@ -116,7 +116,7 @@ ul {
 }
 
 /* Button Styling */
-.textButton {
+.textButton, #confirmDelete, #cancelDelete {
     padding: 8px 12px;
     margin: 5px;
     border-radius: 5px;
@@ -127,19 +127,23 @@ ul {
 }
 
 #inProgressButton {
-    background-color: #17a2b8;
+    background-color: #007bff;
 }
 
 #pendingButton {
     background-color: #ffc107;
 }
 
-#completedButton {
+#completedButton, #cancelDelete {
     background-color: #28a745;
 }
 
-#removeButton {
+#removeButton, #confirmDelete {
     background-color: #dc3545;
+}
+
+#editButton {
+    background-color: skyblue;
 }
 
 /* Clear Button Styling */
@@ -172,4 +176,25 @@ ul {
     #addTask {
         width: 100%;
     }
+}
+
+.svgIcon {
+    width: 16px;
+    height: 14px;
+    fill: white;
+}
+
+#confirmButtons {
+    justify-content: center;
+    display: flex;
+}
+  
+:modal {
+  background-color: beige;
+  border: 2px solid burlywood;
+  border-radius: 5px;
+}
+
+p {
+  color: black;
 }
